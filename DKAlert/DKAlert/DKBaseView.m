@@ -9,6 +9,16 @@
 #import "DKBaseView.h"
 #import "CALayer+DKAnimation.h"
 
+@interface DKBaseView ()
+{
+    
+}
+@property (nonatomic, readonly) UIView *dk_coverView;
+@property (nonatomic, strong) UIColor *dk_coverViewBackgroundColor;
+@property (nonatomic, strong, readonly) NSMutableArray *arrayLines;
+@end
+
+
 @implementation DKBaseView
 
 - (instancetype)init

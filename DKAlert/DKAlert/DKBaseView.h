@@ -42,7 +42,7 @@ typedef NS_ENUM(NSUInteger, DKAlertDismissAnimationType) {
 
 typedef void(^DKAlert_ButtonActionBlock)(NSInteger index);
 
-static NSTimeInterval DEFAULT_ANIMATION_DURATION = .5f;
+static NSTimeInterval DEFAULT_ANIMATION_DURATION = .4f;
 static CGFloat DEFAULT_BUTTON_HEIGHT = 50.f;
 
 @interface DKBaseView : UIView <DKBaseViewDelegate>
@@ -54,15 +54,9 @@ static CGFloat DEFAULT_BUTTON_HEIGHT = 50.f;
     CGFloat padding;
 }
 
-@property (nonatomic, readonly) UIView *dk_coverView;
-
-@property (nonatomic, strong) UILabel *labelTitle;
-
-@property (nonatomic, strong) UIColor *dk_coverViewBackgroundColor;
-
 @property (nonatomic, strong, readonly) NSMutableArray *arrayButtons;
 
-@property (nonatomic, strong, readonly) NSMutableArray *arrayLines;
+@property (nonatomic, strong) UILabel *labelTitle;
 
 @property (nonatomic) DKAlertShowAnimationType dk_showAnimationType;
 
