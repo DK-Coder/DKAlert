@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0419BCB31F1F3CF300E0CB59 /* CALayer+DKAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0419BCB21F1F3CF300E0CB59 /* CALayer+DKAnimation.m */; };
 		0419BCB61F20426E00E0CB59 /* DKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 0419BCB51F20426E00E0CB59 /* DKActionSheet.m */; };
+		0419BCB81F207E3900E0CB59 /* images.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0419BCB71F207E3900E0CB59 /* images.bundle */; };
+		0419BCBB1F207F7900E0CB59 /* UIImage+DKExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 0419BCBA1F207F7900E0CB59 /* UIImage+DKExtension.m */; };
 		041FCC601F1DD3C100580E04 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 041FCC5F1F1DD3C100580E04 /* main.m */; };
 		041FCC631F1DD3C100580E04 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 041FCC621F1DD3C100580E04 /* AppDelegate.m */; };
 		041FCC661F1DD3C100580E04 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 041FCC651F1DD3C100580E04 /* ViewController.m */; };
@@ -24,6 +26,9 @@
 		0419BCB21F1F3CF300E0CB59 /* CALayer+DKAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+DKAnimation.m"; sourceTree = "<group>"; };
 		0419BCB41F20426E00E0CB59 /* DKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DKActionSheet.h; sourceTree = "<group>"; };
 		0419BCB51F20426E00E0CB59 /* DKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DKActionSheet.m; sourceTree = "<group>"; };
+		0419BCB71F207E3900E0CB59 /* images.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = images.bundle; sourceTree = "<group>"; };
+		0419BCB91F207F7900E0CB59 /* UIImage+DKExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+DKExtension.h"; sourceTree = "<group>"; };
+		0419BCBA1F207F7900E0CB59 /* UIImage+DKExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+DKExtension.m"; sourceTree = "<group>"; };
 		041FCC5B1F1DD3C100580E04 /* DKAlert.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DKAlert.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		041FCC5F1F1DD3C100580E04 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		041FCC611F1DD3C100580E04 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -95,6 +100,7 @@
 		041FCC751F1DD3E600580E04 /* DKAlert */ = {
 			isa = PBXGroup;
 			children = (
+				0419BCB71F207E3900E0CB59 /* images.bundle */,
 				041FCC791F1DE22500580E04 /* DKBaseView.h */,
 				041FCC7A1F1DE22500580E04 /* DKBaseView.m */,
 				041FCC761F1DD73A00580E04 /* DKAlert.h */,
@@ -103,6 +109,8 @@
 				0419BCB51F20426E00E0CB59 /* DKActionSheet.m */,
 				0419BCB11F1F3CF300E0CB59 /* CALayer+DKAnimation.h */,
 				0419BCB21F1F3CF300E0CB59 /* CALayer+DKAnimation.m */,
+				0419BCB91F207F7900E0CB59 /* UIImage+DKExtension.h */,
+				0419BCBA1F207F7900E0CB59 /* UIImage+DKExtension.m */,
 			);
 			path = DKAlert;
 			sourceTree = "<group>";
@@ -168,6 +176,7 @@
 				041FCC6E1F1DD3C100580E04 /* LaunchScreen.storyboard in Resources */,
 				041FCC6B1F1DD3C100580E04 /* Assets.xcassets in Resources */,
 				041FCC691F1DD3C100580E04 /* Main.storyboard in Resources */,
+				0419BCB81F207E3900E0CB59 /* images.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,6 +187,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0419BCBB1F207F7900E0CB59 /* UIImage+DKExtension.m in Sources */,
 				041FCC661F1DD3C100580E04 /* ViewController.m in Sources */,
 				041FCC631F1DD3C100580E04 /* AppDelegate.m in Sources */,
 				041FCC601F1DD3C100580E04 /* main.m in Sources */,

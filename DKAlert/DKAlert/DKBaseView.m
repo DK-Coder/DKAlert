@@ -11,6 +11,12 @@
 
 @implementation DKBaseView
 
+- (instancetype)init
+{
+    NSAssert(![self isMemberOfClass:[DKBaseView class]], @"DKBaseView不能直接被使用，请使用它的子类");
+    return [super init];
+}
+
 - (void)sharedInit
 {
     self.backgroundColor = [UIColor whiteColor];
@@ -76,10 +82,10 @@
     [self clearAllButtonsAndLines];
 }
 
-- (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width needMarginTop:(BOOL)isNeed
+- (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width marginTop:(CGFloat)top
 {
     UIView *line = [[UIView alloc] init];
-    line.frame = CGRectMake((CGRectGetWidth(self.frame) - width) / 2, CGRectGetMaxY(view.frame) + (isNeed ? padding : 0.f), width, .5f);
+    line.frame = CGRectMake((CGRectGetWidth(self.frame) - width) / 2, CGRectGetMaxY(view.frame) + top, width, .5f);
     line.backgroundColor = rgb(186, 186, 186);
     [self addSubview:line];
     [_arrayLines addObject:line];

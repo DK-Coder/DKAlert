@@ -41,7 +41,7 @@
         self.labelTitle.text = alertTitle;
         CGSize sizeForTitle = [self.labelTitle sizeThatFits:CGSizeMake(widthForActionSheet - padding * 2, CGFLOAT_MAX)];
         self.labelTitle.frame = CGRectMake(padding, padding, widthForActionSheet - padding * 2, sizeForTitle.height);
-        [self addLineUpToView:self.labelTitle width:widthForActionSheet needMarginTop:YES];
+        [self addLineUpToView:self.labelTitle width:widthForActionSheet marginTop:padding];
     } else {
         padding = 0.f;
     }
@@ -92,7 +92,7 @@
         [btnAction addTarget:self action:@selector(buttonPressed:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:btnAction];
         [self.arrayButtons addObject:btnAction];
-        [self addLineUpToView:btnAction width:CGRectGetWidth(btnAction.frame) needMarginTop:NO];
+        [self addLineUpToView:btnAction width:CGRectGetWidth(btnAction.frame) marginTop:0.f];
     }
     
     return height;

@@ -10,14 +10,16 @@
 
 @interface DKAlert ()
 {
+    DKImageAlertIconType iconType;
     NSString *alertMessage;
 }
+@property (nonatomic, strong) UIImageView *imageIcon;
 @property (nonatomic, strong) UITextView *textViewContent;
 @end
 
 @implementation DKAlert
 
-- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message buttonTitle:(NSArray *)titles buttonTitleColors:(NSArray *)colors
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message buttonTitle:(NSArray *)titles buttonTitleColors:(NSArray *)colors iconType:(DKImageAlertIconType)type
 {
     self = [super init];
     if (self) {
@@ -25,6 +27,7 @@
         alertMessage = message;
         arrayButtonTitles = titles;
         arrayButtonTitleColors = colors;
+        iconType = type;
         
         [self sharedInit];
     }
@@ -39,6 +42,19 @@
     
     self.labelTitle.text = alertTitle;
     self.textViewContent.text = alertMessage;
+    switch (iconType) {
+        case DKImageAlertIconTypeSuccess:
+            self.imageIcon.image = [UIImage imageNamed:@"images.bundle/correct"];
+            break;
+        case DKImageAlertIconTypeFailure:
+            self.imageIcon.image = [UIImage imageNamed:@"images.bundle/error"];
+            break;
+        case DKImageAlertIconTypeInfomation:
+            self.imageIcon.image = [UIImage imageNamed:@"images.bundle/info"];
+            break;
+        case DKImageAlertIconTypeNone:
+            break;
+    }
 }
 
 - (void)dk_layoutAlert
@@ -47,19 +63,29 @@
     
     CGFloat widthForAlert = SCREEN_WIDTH * .7f;
     self.frame = CGRectMake(0.f, 0.f, widthForAlert, 0.f);
+    if (iconType == DKImageAlertIconTypeNone) {
+        [self layoutNormalAlert];
+    } else {
+        [self layoutImageAlert];
+    }
+    self.center = CGPointMake(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+}
+
+- (void)layoutNormalAlert
+{
+    CGFloat widthForAlert = CGRectGetWidth(self.frame);
     if (!alertMessage || alertMessage.length == 0) {
         alertMessage = alertTitle;
         alertTitle = nil;
         
-        self.labelTitle.text = alertTitle;
+        self.labelTitle.text = nil;
         self.textViewContent.text = alertMessage;
         self.textViewContent.font = self.labelTitle.font;
     }
-    // 标题
     CGSize sizeForTitle = [self.labelTitle sizeThatFits:CGSizeMake(widthForAlert - padding * 2, CGFLOAT_MAX)];
     self.labelTitle.frame = CGRectMake(padding, padding, widthForAlert - padding * 2, sizeForTitle.height);
     // 我是一条分割线
-    UIView *line1 = [self addLineUpToView:self.labelTitle width:CGRectGetWidth(self.labelTitle.frame) needMarginTop:YES];
+    UIView *line1 = [self addLineUpToView:self.labelTitle width:CGRectGetWidth(self.labelTitle.frame) marginTop:padding];
     if (!alertTitle || alertTitle.length == 0) {
         CGRect frameForLine1 = line1.frame;
         frameForLine1.size.height = 0.f;
@@ -71,12 +97,43 @@
     CGFloat heightForMessage = sizeForMessage.height > maxHeightForMessage ? maxHeightForMessage : sizeForMessage.height;
     self.textViewContent.frame = CGRectMake(padding, CGRectGetMaxY(line1.frame) + padding, widthForAlert - padding * 2, heightForMessage);
     // 我是一条分割线
-    [self addLineUpToView:self.textViewContent width:widthForAlert needMarginTop:YES];
+    UIView *line2 = [self addLineUpToView:self.textViewContent width:widthForAlert marginTop:padding];
     // 布局按钮
-    CGFloat heightForButtons = [self layoutButtons];
+    CGFloat heightForButtons = [self layoutButtonsReferenceView:line2];
     
-    self.frame = CGRectMake(0.f, 0.f, widthForAlert, padding * 4 + CGRectGetHeight(self.labelTitle.frame) + CGRectGetHeight(self.textViewContent.frame) + heightForButtons);
-    self.center = CGPointMake(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    self.frame = CGRectMake(0.f, 0.f, widthForAlert, CGRectGetMaxY(line2.frame) + heightForButtons);
+}
+
+- (void)layoutImageAlert
+{
+    CGFloat widthForAlert = CGRectGetWidth(self.frame);
+    
+    [self.labelTitle removeFromSuperview];
+    self.labelTitle = nil;
+    // 图标
+    CGSize sizeForImage = self.imageIcon.image.size;
+    CGFloat widthForImage = 60.f;
+    CGFloat heightForImage = widthForImage * sizeForImage.height / sizeForImage.width;
+    self.imageIcon.frame = CGRectMake((widthForAlert - widthForImage) / 2, padding * 3, widthForImage, heightForImage);
+    
+    UIView *line = nil;
+    if (alertMessage && alertMessage.length > 0) {
+        // 内容
+        CGSize sizeForMessage = [self.textViewContent sizeThatFits:CGSizeMake(widthForAlert - padding * 2, CGFLOAT_MAX)];
+        CGFloat maxHeightForMessage = (SCREEN_HEIGHT - DEFAULT_BUTTON_HEIGHT * arrayButtonTitles.count - padding * 4 - heightForImage);
+        CGFloat heightForMessage = sizeForMessage.height > maxHeightForMessage ? maxHeightForMessage : sizeForMessage.height;
+        self.textViewContent.frame = CGRectMake(padding, CGRectGetMaxY(self.imageIcon.frame) + padding * 3, widthForAlert - padding * 2, heightForMessage);
+        // 我是一条分割线
+        line = [self addLineUpToView:self.textViewContent width:widthForAlert marginTop:padding];
+    } else {
+        self.textViewContent.frame = CGRectZero;
+        // 我是一条分割线
+        line = [self addLineUpToView:self.imageIcon width:widthForAlert marginTop:CGRectGetMinY(self.imageIcon.frame)];
+    }
+    // 布局按钮
+    CGFloat heightForButtons = [self layoutButtonsReferenceView:line];
+    
+    self.frame = CGRectMake(0.f, 0.f, widthForAlert, CGRectGetMaxY(line.frame) + heightForButtons);
 }
 
 - (CGPathRef)generatePathByDirection:(NSUInteger)direction
@@ -119,21 +176,21 @@
     return path.CGPath;
 }
 
-- (CGFloat)layoutButtons
+- (CGFloat)layoutButtonsReferenceView:(UIView *)view
 {
     CGFloat height = 0.f;
     if (arrayButtonTitles.count == 1) {
         height = DEFAULT_BUTTON_HEIGHT;
         
         UIButton *btnAction = [self addButtonAtIndex:0];
-        btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(self.textViewContent.frame) + padding, CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
+        btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame), CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
     } else if (arrayButtonTitles.count == 2) {
         height = DEFAULT_BUTTON_HEIGHT;
         
         CGFloat widthForButton = CGRectGetWidth(self.frame) / 2;
         for (NSInteger i = 0; i < 2; i++) {
             UIButton *btnAction = [self addButtonAtIndex:i];
-            btnAction.frame = CGRectMake(widthForButton * i, CGRectGetMaxY(self.textViewContent.frame) + padding, widthForButton, DEFAULT_BUTTON_HEIGHT);
+            btnAction.frame = CGRectMake(widthForButton * i, CGRectGetMaxY(view.frame), widthForButton, DEFAULT_BUTTON_HEIGHT);
             if (i == 0) {
                 [self addVerticalLineLeftToView:btnAction height:DEFAULT_BUTTON_HEIGHT needMarginLeft:NO];
             }
@@ -142,8 +199,8 @@
         height = arrayButtonTitles.count * DEFAULT_BUTTON_HEIGHT;
         for (NSInteger i = 0, length = arrayButtonTitles.count; i < length; i++) {
             UIButton *btnAction = [self addButtonAtIndex:i];
-            btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(self.textViewContent.frame) + padding + i * DEFAULT_BUTTON_HEIGHT, CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
-            [self addLineUpToView:btnAction width:CGRectGetWidth(self.frame) needMarginTop:NO];
+            btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame) + i * DEFAULT_BUTTON_HEIGHT, CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
+            [self addLineUpToView:btnAction width:CGRectGetWidth(self.frame) marginTop:0.f];
         }
     }
     
@@ -187,7 +244,7 @@
 #pragma 对外方法实现
 + (void)dk_showAlertWithTitle:(NSString *)title message:(NSString *)message buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors showAnimationType:(DKAlertShowAnimationType)showType dismissAnimationType:(DKAlertDismissAnimationType)dismissType action:(DKAlert_ButtonActionBlock)block
 {
-    DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors];
+    DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors iconType:DKImageAlertIconTypeNone];
     alertView.dk_showAnimationType = showType;
     alertView.dk_dismissAnimationType = dismissType;
     alertView.actionBlock = block;
@@ -197,13 +254,30 @@
 
 + (void)dk_showAlertWithTitle:(NSString *)title message:(NSString *)message buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors action:(DKAlert_ButtonActionBlock)block
 {
-    DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors];
+    DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors iconType:DKImageAlertIconTypeNone];
+    alertView.actionBlock = block;
+    
+    [alertView dk_showAlert];
+}
+
++ (void)dk_showImageAlertWithIconType:(DKImageAlertIconType)iconType message:(NSString *)message buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors showAnimationType:(DKAlertShowAnimationType)showType dismissAnimationType:(DKAlertDismissAnimationType)dismissType action:(DKAlert_ButtonActionBlock)block
+{
+    DKAlert *alertView = [[DKAlert alloc] initWithTitle:nil message:message buttonTitle:titles buttonTitleColors:colors iconType:iconType];
     alertView.actionBlock = block;
     
     [alertView dk_showAlert];
 }
 
 #pragma mark getter/setter
+- (UIImageView *)imageIcon
+{
+    if (!_imageIcon) {
+        _imageIcon = [[UIImageView alloc] init];
+        [self addSubview:_imageIcon];
+    }
+    return _imageIcon;
+}
+
 - (UITextView *)textViewContent
 {
     if (!_textViewContent) {

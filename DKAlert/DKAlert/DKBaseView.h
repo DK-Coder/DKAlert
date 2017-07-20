@@ -74,7 +74,7 @@ static CGFloat DEFAULT_BUTTON_HEIGHT = 50.f;
 
 - (void)dk_dismissAlert;
 
-- (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width needMarginTop:(BOOL)isNeed;
+- (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width marginTop:(CGFloat)top;
 
 - (UIView *)addVerticalLineLeftToView:(UIView *)view height:(CGFloat)height needMarginLeft:(BOOL)isNeed;
 @end
