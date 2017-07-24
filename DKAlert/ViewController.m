@@ -39,7 +39,8 @@ static NSString *kDefaultCellIdentifier = @"kDefaultCellIdentifier";
                                           @"带图标Alert，淡入淡出，1个按钮",
                                           @"带图标Alert，淡入淡出，2个按钮",
                                           @"带图标Alert，淡入淡出，3个按钮"],
-                        @"DKActionSheet功能展示" : @[@"普通ActionSheet"]};
+                        @"DKActionSheet功能展示" : @[@"普通ActionSheet",
+                                                 @"没有title的ActionSheet"]};
     
     UITableView *tableOptions = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
     tableOptions.delegate = self;
@@ -141,7 +142,11 @@ static NSString *kDefaultCellIdentifier = @"kDefaultCellIdentifier";
         }
     } else if (section == 1) {
         if (row == 0) {
-            [DKActionSheet showActionSheetWithTitle:@"选择类型" buttonTitles:@[@"类型1", @"类型2", @"类型3"] buttonTitleColors:colors action:^(NSInteger index) {
+            [DKActionSheet dk_showActionSheetWithTitle:@"选择类型" buttonTitles:@[@"类型1", @"类型2", @"类型3"] buttonTitleColors:colors action:^(NSInteger index) {
+                
+            }];
+        } else if (row == 1) {
+            [DKActionSheet dk_showActionSheetWithTitle:nil buttonTitles:@[@"类型1", @"类型2", @"类型3", @"类型4", @"类型5", @"类型6"] buttonTitleColors:colors action:^(NSInteger index) {
                 
             }];
         }

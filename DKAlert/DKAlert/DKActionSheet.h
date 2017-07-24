@@ -10,5 +10,5 @@
 
 @interface DKActionSheet : DKBaseView
 
-+ (void)showActionSheetWithTitle:(NSString * __nullable)title buttonTitles:(NSArray * __nullable)titles buttonTitleColors:(NSArray * __nullable)colors action:(DKAlert_ButtonActionBlock __nullable)block;
++ (void)dk_showActionSheetWithTitle:(NSString * __nullable)title buttonTitles:(NSArray * __nullable)titles buttonTitleColors:(NSArray * __nullable)colors action:(DKAlert_ButtonActionBlock __nullable)block;
 @end

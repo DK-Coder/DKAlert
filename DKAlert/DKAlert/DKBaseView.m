@@ -92,10 +92,44 @@
     [self clearAllButtonsAndLines];
 }
 
+#pragma mark 内部方式实现
+- (UIButton *)addButtonWithTag:(NSInteger)tag backgroundColor:(UIColor *)bgColor title:(NSString *)title titleColor:(UIColor *)titleColor
+{
+    UIButton *btnAction = [[UIButton alloc] init];
+    btnAction.tag = tag;
+    btnAction.backgroundColor = bgColor ?: [UIColor whiteColor];
+    [btnAction setTitle:title forState:UIControlStateNormal];
+    [btnAction setTitleColor:titleColor forState:UIControlStateNormal];
+    [btnAction addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [btnAction addTarget:self action:@selector(buttonTouched:) forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
+    [btnAction addTarget:self action:@selector(buttonReleased:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchDragExit];
+    [self addSubview:btnAction];
+    [self.arrayButtons addObject:btnAction];
+    
+    return btnAction;
+}
+
+- (UIButton *)addButtonAtIndex:(NSInteger)index
+{
+    return [self addButtonWithTag:index backgroundColor:[UIColor whiteColor] title:arrayButtonTitles[index] titleColor:[self buttonTitleColorAtIndex:index]];
+}
+
+- (UIColor *)buttonTitleColorAtIndex:(NSInteger)index
+{
+    UIColor *titleColor = nil;
+    if (arrayButtonTitleColors.count > index) {
+        titleColor = arrayButtonTitleColors[index];
+    } else {
+        titleColor = [UIColor blackColor];
+    }
+    
+    return titleColor;
+}
+
 - (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width marginTop:(CGFloat)top
 {
     UIView *line = [[UIView alloc] init];
-    line.frame = CGRectMake((CGRectGetWidth(self.frame) - width) / 2, CGRectGetMaxY(view.frame) + top, width, .5f);
+    line.frame = CGRectMake((CGRectGetWidth(self.frame) - width) / 2, CGRectGetMaxY(view.frame) + top, width, DEFAULT_LINE_HEIGHT_OR_WIDTH);
     line.backgroundColor = rgb(186, 186, 186);
     [self addSubview:line];
     [_arrayLines addObject:line];
@@ -103,10 +137,10 @@
     return line;
 }
 
-- (UIView *)addVerticalLineLeftToView:(UIView *)view height:(CGFloat)height needMarginLeft:(BOOL)isNeed
+- (UIView *)addVerticalLineLeftToView:(UIView *)view height:(CGFloat)height marginLeft:(CGFloat)left
 {
     UIView *line = [[UIView alloc] init];
-    line.frame = CGRectMake(CGRectGetMaxX(view.frame) + (isNeed ? padding : 0.f), CGRectGetMinY(view.frame), .5f, height);
+    line.frame = CGRectMake(CGRectGetMaxX(view.frame) + left, CGRectGetMinY(view.frame), DEFAULT_LINE_HEIGHT_OR_WIDTH, height);
     line.backgroundColor = rgb(186, 186, 186);
     [self addSubview:line];
     [_arrayLines addObject:line];
@@ -133,18 +167,26 @@
     [self dk_layoutAlert];
 }
 
-#pragma mark getter/setter
-- (UILabel *)labelTitle
+- (void)actionButtonPressed:(UIButton *)sender
 {
-    if (!_labelTitle) {
-        _labelTitle = [[UILabel alloc] init];
-        _labelTitle.textAlignment = NSTextAlignmentCenter;
-        _labelTitle.font = [UIFont boldSystemFontOfSize:18.f];
-        [self addSubview:_labelTitle];
+    [self dk_dismissAlert];
+    NSInteger tag = sender.tag;
+    if (self.actionBlock) {
+        self.actionBlock(tag);
     }
-    return _labelTitle;
 }
 
+- (void)buttonTouched:(UIButton *)sender
+{
+    sender.backgroundColor = rgb(245, 245, 245);
+}
+
+- (void)buttonReleased:(UIButton *)sender
+{
+    sender.backgroundColor = [UIColor clearColor];
+}
+
+#pragma mark getter/setter
 - (void)destroy
 {
     if (self.dk_showAnimationType != DKAlertShowAnimationTypeFadeIn) {

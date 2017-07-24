@@ -13,6 +13,7 @@
     DKImageAlertIconType iconType;
     NSString *alertMessage;
 }
+@property (nonatomic, strong) UILabel *labelTitle;
 @property (nonatomic, strong) UIImageView *imageIcon;
 @property (nonatomic, strong) UITextView *textViewContent;
 @end
@@ -39,6 +40,7 @@
     [super sharedInit];
     
     self.layer.cornerRadius = 10.f;
+    self.layer.masksToBounds = YES;
     
     self.labelTitle.text = alertTitle;
     self.textViewContent.text = alertMessage;
@@ -184,61 +186,33 @@
         
         UIButton *btnAction = [self addButtonAtIndex:0];
         btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame), CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
+//        btnAction.layer.cornerRadius = self.layer.cornerRadius;
     } else if (arrayButtonTitles.count == 2) {
         height = DEFAULT_BUTTON_HEIGHT;
         
         CGFloat widthForButton = CGRectGetWidth(self.frame) / 2;
         for (NSInteger i = 0; i < 2; i++) {
             UIButton *btnAction = [self addButtonAtIndex:i];
-            btnAction.frame = CGRectMake(widthForButton * i, CGRectGetMaxY(view.frame), widthForButton, DEFAULT_BUTTON_HEIGHT);
+            btnAction.frame = CGRectMake((widthForButton + .5f) * i, CGRectGetMaxY(view.frame), widthForButton, DEFAULT_BUTTON_HEIGHT);
+//            btnAction.layer.cornerRadius = self.layer.cornerRadius;
             if (i == 0) {
-                [self addVerticalLineLeftToView:btnAction height:DEFAULT_BUTTON_HEIGHT needMarginLeft:NO];
+                [self addVerticalLineLeftToView:btnAction height:DEFAULT_BUTTON_HEIGHT marginLeft:0.f];
             }
         }
     } else {
-        height = arrayButtonTitles.count * DEFAULT_BUTTON_HEIGHT;
+        height = arrayButtonTitles.count * DEFAULT_BUTTON_HEIGHT + (arrayButtonTitles.count - 1) * DEFAULT_LINE_HEIGHT_OR_WIDTH;
         for (NSInteger i = 0, length = arrayButtonTitles.count; i < length; i++) {
             UIButton *btnAction = [self addButtonAtIndex:i];
-            btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame) + i * DEFAULT_BUTTON_HEIGHT, CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
-            [self addLineUpToView:btnAction width:CGRectGetWidth(self.frame) marginTop:0.f];
+            btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame) + i * (DEFAULT_BUTTON_HEIGHT + DEFAULT_LINE_HEIGHT_OR_WIDTH), CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
+            if (i == length - 1) {
+//                btnAction.layer.cornerRadius = self.layer.cornerRadius;
+            } else {
+                [self addLineUpToView:btnAction width:CGRectGetWidth(self.frame) marginTop:0.f];
+            }
         }
     }
     
     return height;
-}
-
-- (UIButton *)addButtonAtIndex:(NSInteger)index
-{
-    UIButton *btnAction = [[UIButton alloc] init];
-    [btnAction setTag:index];
-    [btnAction setTitle:arrayButtonTitles[index] forState:UIControlStateNormal];
-    [btnAction setTitleColor:[self buttonTitleColorAtIndex:index] forState:UIControlStateNormal];
-    [btnAction addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:btnAction];
-    [self.arrayButtons addObject:btnAction];
-    
-    return btnAction;
-}
-
-- (UIColor *)buttonTitleColorAtIndex:(NSInteger)index
-{
-    UIColor *titleColor = nil;
-    if (arrayButtonTitleColors.count > index) {
-        titleColor = arrayButtonTitleColors[index];
-    } else {
-        titleColor = [UIColor blackColor];
-    }
-    
-    return titleColor;
-}
-
-- (void)actionButtonPressed:(UIButton *)sender
-{
-    [self dk_dismissAlert];
-    NSInteger tag = sender.tag;
-    if (self.actionBlock) {
-        self.actionBlock(tag);
-    }
 }
 
 #pragma 对外方法实现
@@ -269,6 +243,17 @@
 }
 
 #pragma mark getter/setter
+- (UILabel *)labelTitle
+{
+    if (!_labelTitle) {
+        _labelTitle = [[UILabel alloc] init];
+        _labelTitle.textAlignment = NSTextAlignmentCenter;
+        _labelTitle.font = [UIFont boldSystemFontOfSize:18.f];
+        [self addSubview:_labelTitle];
+    }
+    return _labelTitle;
+}
+
 - (UIImageView *)imageIcon
 {
     if (!_imageIcon) {

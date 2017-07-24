@@ -12,8 +12,8 @@
 {
     
 }
+@property (nonatomic, strong) UILabel *labelTitle;
 @end
-
 
 @implementation DKActionSheet
 
@@ -30,25 +30,32 @@
     return self;
 }
 
+- (void)sharedInit
+{
+    [super sharedInit];
+    
+    self.backgroundColor = [UIColor groupTableViewBackgroundColor];
+}
+
 - (void)dk_layoutAlert
 {
     [super dk_layoutAlert];
     
     CGFloat widthForActionSheet = SCREEN_WIDTH;
     self.frame = CGRectMake(0.f, 0.f, widthForActionSheet, 0.f);
+    UIView *labelBottomLine = nil;
     if (alertTitle.length != 0) {
         // 标题
         self.labelTitle.text = alertTitle;
-        CGSize sizeForTitle = [self.labelTitle sizeThatFits:CGSizeMake(widthForActionSheet - padding * 2, CGFLOAT_MAX)];
-        self.labelTitle.frame = CGRectMake(padding, padding, widthForActionSheet - padding * 2, sizeForTitle.height);
-        [self addLineUpToView:self.labelTitle width:widthForActionSheet marginTop:padding];
+        self.labelTitle.frame = CGRectMake(0.f, 0.f, widthForActionSheet, 60.f);
+        labelBottomLine = [self addLineUpToView:self.labelTitle width:widthForActionSheet marginTop:0.f];
     } else {
-        padding = 0.f;
+//        padding = 0.f;
     }
     // 布局按钮
-    CGFloat height = [self layoutButtons];
+    CGFloat height = [self layoutButtonsReferenceView:labelBottomLine];
     
-    CGFloat heightForActionSheet = CGRectGetMaxY(self.labelTitle.frame) + padding + height;
+    CGFloat heightForActionSheet = CGRectGetMaxY(self.labelTitle.frame) + height;
     self.frame = CGRectMake(0.f, SCREEN_HEIGHT - heightForActionSheet, widthForActionSheet, heightForActionSheet);
 }
 
@@ -70,57 +77,29 @@
 }
 
 #pragma mark 内部方法实现
-- (CGFloat)layoutButtons
+- (CGFloat)layoutButtonsReferenceView:(UIView *)view
 {
-    // 添加一个“取消”选项
-    NSMutableArray *tempArray = [NSMutableArray arrayWithArray:arrayButtonTitles];
-    [tempArray addObject:@"取消"];
-    arrayButtonTitles = [tempArray copy];
-    
     NSInteger numberOfButtons = arrayButtonTitles.count;
-    CGFloat height = DEFAULT_BUTTON_HEIGHT * numberOfButtons;
+    CGFloat height = DEFAULT_BUTTON_HEIGHT * numberOfButtons + (numberOfButtons - 1) * DEFAULT_LINE_HEIGHT_OR_WIDTH;
     for (NSInteger i = 0; i < numberOfButtons; i++) {
-        UIButton *btnAction = [[UIButton alloc] init];
-        btnAction.tag = i;
-        btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(self.labelTitle.frame) + padding + DEFAULT_BUTTON_HEIGHT * i, SCREEN_WIDTH, DEFAULT_BUTTON_HEIGHT);
-        [btnAction setTitle:arrayButtonTitles[i] forState:UIControlStateNormal];
-        if (i == numberOfButtons - 1) {
-            [btnAction setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-        } else {
-            [btnAction setTitleColor:[self buttonTitleColorAtIndex:i] forState:UIControlStateNormal];
+        UIButton *btnAction = [self addButtonAtIndex:i];
+        btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame) + (DEFAULT_BUTTON_HEIGHT + DEFAULT_LINE_HEIGHT_OR_WIDTH) * i, SCREEN_WIDTH, DEFAULT_BUTTON_HEIGHT);
+        if (i != numberOfButtons - 1) {
+            [self addLineUpToView:btnAction width:CGRectGetWidth(btnAction.frame) marginTop:0.f];
         }
-        [btnAction addTarget:self action:@selector(buttonPressed:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:btnAction];
-        [self.arrayButtons addObject:btnAction];
-        [self addLineUpToView:btnAction width:CGRectGetWidth(btnAction.frame) marginTop:0.f];
     }
+    // 添加取消按钮
+    UIButton *previousButton = [self.arrayButtons lastObject];
+    UIButton *btnCancel = [self addButtonWithTag:numberOfButtons backgroundColor:nil title:@"取消" titleColor:[UIColor redColor]];
+    btnCancel.frame = CGRectMake(0.f, CGRectGetMaxY(previousButton.frame) + padding, CGRectGetWidth(previousButton.frame), DEFAULT_BUTTON_HEIGHT);
+    
+    height += (padding + DEFAULT_BUTTON_HEIGHT);
     
     return height;
 }
 
-- (UIColor *)buttonTitleColorAtIndex:(NSInteger)index
-{
-    UIColor *titleColor = nil;
-    if (arrayButtonTitleColors.count > index) {
-        titleColor = arrayButtonTitleColors[index];
-    } else {
-        titleColor = [UIColor blackColor];
-    }
-    
-    return titleColor;
-}
-
-- (void)buttonPressed:(UIButton *)sender
-{
-    [self dk_dismissAlert];
-    NSInteger tag = sender.tag;
-    if (self.actionBlock) {
-        self.actionBlock(tag);
-    }
-}
-
 #pragma mark 对外方法实现
-+ (void)showActionSheetWithTitle:(NSString *)title buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors action:(DKAlert_ButtonActionBlock)block
++ (void)dk_showActionSheetWithTitle:(NSString *)title buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors action:(DKAlert_ButtonActionBlock)block
 {
     DKActionSheet *actionSheet = [[DKActionSheet alloc] initWithTitle:title buttonTitles:titles buttonTitleColors:colors];
     actionSheet.dk_showAnimationType = DKAlertShowAnimationTypeFromBottom;
@@ -128,5 +107,19 @@
     actionSheet.actionBlock = block;
     
     [actionSheet dk_showAlert];
+}
+
+#pragma mark getter/setter
+- (UILabel *)labelTitle
+{
+    if (!_labelTitle) {
+        _labelTitle = [[UILabel alloc] init];
+        _labelTitle.backgroundColor = [UIColor whiteColor];
+        _labelTitle.textColor = [UIColor lightGrayColor];
+        _labelTitle.textAlignment = NSTextAlignmentCenter;
+        _labelTitle.font = [UIFont systemFontOfSize:14.f];
+        [self addSubview:_labelTitle];
+    }
+    return _labelTitle;
 }
 @end

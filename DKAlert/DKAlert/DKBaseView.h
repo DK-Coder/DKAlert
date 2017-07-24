@@ -44,6 +44,7 @@ typedef void(^DKAlert_ButtonActionBlock)(NSInteger index);
 
 static NSTimeInterval DEFAULT_ANIMATION_DURATION = .4f;
 static CGFloat DEFAULT_BUTTON_HEIGHT = 50.f;
+static CGFloat DEFAULT_LINE_HEIGHT_OR_WIDTH = .5f;
 
 @interface DKBaseView : UIView <DKBaseViewDelegate>
 {
@@ -56,8 +57,6 @@ static CGFloat DEFAULT_BUTTON_HEIGHT = 50.f;
 
 @property (nonatomic, strong, readonly) NSMutableArray *arrayButtons;
 
-@property (nonatomic, strong) UILabel *labelTitle;
-
 @property (nonatomic) DKAlertShowAnimationType dk_showAnimationType;
 
 @property (nonatomic) DKAlertDismissAnimationType dk_dismissAnimationType;
@@ -68,7 +67,11 @@ static CGFloat DEFAULT_BUTTON_HEIGHT = 50.f;
 
 - (void)dk_dismissAlert;
 
+- (UIButton *)addButtonWithTag:(NSInteger)tag backgroundColor:(UIColor *)bgColor title:(NSString *)title titleColor:(UIColor *)titleColor;
+
+- (UIButton *)addButtonAtIndex:(NSInteger)index;
+
 - (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width marginTop:(CGFloat)top;
 
-- (UIView *)addVerticalLineLeftToView:(UIView *)view height:(CGFloat)height needMarginLeft:(BOOL)isNeed;
+- (UIView *)addVerticalLineLeftToView:(UIView *)view height:(CGFloat)height marginLeft:(CGFloat)left;
 @end
