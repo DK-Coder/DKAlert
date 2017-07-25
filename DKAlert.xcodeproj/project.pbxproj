@@ -159,7 +159,6 @@
 				TargetAttributes = {
 					041FCC5A1F1DD3C100580E04 = {
 						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = 75L9P29QVM;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -329,7 +328,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 75L9P29QVM;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = DKAlert/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.DK-Coder.DKAlert";
@@ -341,7 +340,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 75L9P29QVM;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = DKAlert/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.DK-Coder.DKAlert";
