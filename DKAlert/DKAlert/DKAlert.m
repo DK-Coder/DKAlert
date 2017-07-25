@@ -10,7 +10,7 @@
 
 @interface DKAlert ()
 {
-    DKImageAlertIconType iconType;
+    DKAlertIconType iconType;
     NSString *alertMessage;
 }
 @property (nonatomic, strong) UILabel *labelTitle;
@@ -20,7 +20,7 @@
 
 @implementation DKAlert
 
-- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message buttonTitle:(NSArray *)titles buttonTitleColors:(NSArray *)colors iconType:(DKImageAlertIconType)type
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message buttonTitle:(NSArray *)titles buttonTitleColors:(NSArray *)colors iconType:(DKAlertIconType)type
 {
     self = [super init];
     if (self) {
@@ -44,28 +44,16 @@
     
     self.labelTitle.text = alertTitle;
     self.textViewContent.text = alertMessage;
-    switch (iconType) {
-        case DKImageAlertIconTypeSuccess:
-            self.imageIcon.image = [UIImage imageNamed:@"images.bundle/correct"];
-            break;
-        case DKImageAlertIconTypeFailure:
-            self.imageIcon.image = [UIImage imageNamed:@"images.bundle/error"];
-            break;
-        case DKImageAlertIconTypeInfomation:
-            self.imageIcon.image = [UIImage imageNamed:@"images.bundle/info"];
-            break;
-        case DKImageAlertIconTypeNone:
-            break;
-    }
+    self.imageIcon.image = [UIImage imageNamed:[self getIconFileNameByIconType:iconType]];
 }
 
 - (void)dk_layoutAlert
 {
     [super dk_layoutAlert];
     
-    CGFloat widthForAlert = SCREEN_WIDTH * .7f;
+    CGFloat widthForAlert = SCREEN_WIDTH * .8f;
     self.frame = CGRectMake(0.f, 0.f, widthForAlert, 0.f);
-    if (iconType == DKImageAlertIconTypeNone) {
+    if (iconType == DKAlertIconTypeNone) {
         [self layoutNormalAlert];
     } else {
         [self layoutImageAlert];
@@ -218,7 +206,7 @@
 #pragma 对外方法实现
 + (void)dk_showAlertWithTitle:(NSString *)title message:(NSString *)message buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors showAnimationType:(DKAlertShowAnimationType)showType dismissAnimationType:(DKAlertDismissAnimationType)dismissType action:(DKAlert_ButtonActionBlock)block
 {
-    DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors iconType:DKImageAlertIconTypeNone];
+    DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors iconType:DKAlertIconTypeNone];
     alertView.dk_showAnimationType = showType;
     alertView.dk_dismissAnimationType = dismissType;
     alertView.actionBlock = block;
@@ -228,13 +216,13 @@
 
 + (void)dk_showAlertWithTitle:(NSString *)title message:(NSString *)message buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors action:(DKAlert_ButtonActionBlock)block
 {
-    DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors iconType:DKImageAlertIconTypeNone];
+    DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors iconType:DKAlertIconTypeNone];
     alertView.actionBlock = block;
     
     [alertView dk_showAlert];
 }
 
-+ (void)dk_showImageAlertWithIconType:(DKImageAlertIconType)iconType message:(NSString *)message buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors showAnimationType:(DKAlertShowAnimationType)showType dismissAnimationType:(DKAlertDismissAnimationType)dismissType action:(DKAlert_ButtonActionBlock)block
++ (void)dk_showImageAlertWithIconType:(DKAlertIconType)iconType message:(NSString *)message buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors showAnimationType:(DKAlertShowAnimationType)showType dismissAnimationType:(DKAlertDismissAnimationType)dismissType action:(DKAlert_ButtonActionBlock)block
 {
     DKAlert *alertView = [[DKAlert alloc] initWithTitle:nil message:message buttonTitle:titles buttonTitleColors:colors iconType:iconType];
     alertView.actionBlock = block;

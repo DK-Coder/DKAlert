@@ -13,9 +13,9 @@
 {
     
 }
-@property (nonatomic, readonly) UIView *dk_coverView;
 @property (nonatomic, strong) UIColor *dk_coverViewBackgroundColor;
-@property (nonatomic, strong, readonly) NSMutableArray *arrayLines;
+@property (nonatomic, strong) NSMutableArray *arrayButtons;
+@property (nonatomic, strong) NSMutableArray *arrayLines;
 @end
 
 
@@ -36,25 +36,18 @@
     self.dk_showAnimationType = DKAlertShowAnimationTypeFadeIn;
     self.dk_dismissAnimationType = DKAlertDismissAnimationTypeFadeOut;
     self.dk_coverViewBackgroundColor = [UIColor colorWithWhite:0.f alpha:.4f];
-    
-    _arrayButtons = [[NSMutableArray alloc] init];
-    _arrayLines = [[NSMutableArray alloc] init];
-    
-    _dk_coverView = [[UIView alloc] init];
-    _dk_coverView.frame = CGRectMake(0.f, 0.f, SCREEN_WIDTH, SCREEN_HEIGHT);
-    _dk_coverView.backgroundColor = self.dk_coverViewBackgroundColor;
-    
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dk_dismissAlert)];
-    [_dk_coverView addGestureRecognizer:tapGesture];
+    self.needCoverView = YES;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDeviceOrientationRotateAction:) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)dk_showAlert
 {
-    [[UIApplication sharedApplication].keyWindow addSubview:self.dk_coverView];
-    [[UIApplication sharedApplication].keyWindow addSubview:self];
-    [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self];
+    if (self.isNeedCoverView) {
+        [self.userWindow addSubview:self.dk_coverView];
+    }
+    [self.userWindow addSubview:self];
+    [self.userWindow bringSubviewToFront:self];
     
     [self dk_layoutAlert];
     
@@ -93,6 +86,16 @@
 }
 
 #pragma mark 内部方式实现
+- (NSArray *)getButtonsOnView
+{
+    return [_arrayButtons copy];
+}
+
+- (NSArray *)getLinesOnView
+{
+    return [_arrayLines copy];
+}
+
 - (UIButton *)addButtonWithTag:(NSInteger)tag backgroundColor:(UIColor *)bgColor title:(NSString *)title titleColor:(UIColor *)titleColor
 {
     UIButton *btnAction = [[UIButton alloc] init];
@@ -186,9 +189,9 @@
     sender.backgroundColor = [UIColor clearColor];
 }
 
-#pragma mark getter/setter
 - (void)destroy
 {
+    self.userWindow.windowLevel = UIWindowLevelNormal;
     if (self.dk_showAnimationType != DKAlertShowAnimationTypeFadeIn) {
         [self.layer removeAllAnimations];
     }
@@ -203,5 +206,71 @@
 - (void)dealloc
 {
     [self destroy];
+}
+
+- (NSString *)getIconFileNameByIconType:(DKAlertIconType)type
+{
+    NSString *fileName = nil;
+    switch (type) {
+        case DKAlertIconTypeSuccess:
+            fileName = @"images.bundle/correct";
+            break;
+        case DKAlertIconTypeFailure:
+            fileName = @"images.bundle/error";
+            break;
+        case DKAlertIconTypeInfomation:
+            fileName = @"images.bundle/info";
+            break;
+        case DKAlertIconTypeSuccessCircle:
+            fileName = @"images.bundle/correct-circle";
+            break;
+        case DKAlertIconTypeFailureCircle:
+            fileName = @"images.bundle/error-circle";
+            break;
+        case DKAlertIconTypeInfomationCircle:
+            fileName = @"images.bundle/info-circle";
+            break;
+        case DKAlertIconTypeNone:
+        case DKAlertIconTypeCustom:
+            break;
+    }
+    
+    return fileName;
+}
+#pragma mark getter/setter
+- (UIWindow *)userWindow
+{
+    if (!_userWindow) {
+        _userWindow = [UIApplication sharedApplication].keyWindow;
+    }
+    return _userWindow;
+}
+- (NSMutableArray *)arrayButtons
+{
+    if (!_arrayButtons) {
+        _arrayButtons = [[NSMutableArray alloc] init];
+    }
+    return _arrayButtons;
+}
+
+- (NSMutableArray *)arrayLines
+{
+    if (!_arrayLines) {
+        _arrayLines = [[NSMutableArray alloc] init];
+    }
+    return _arrayLines;
+}
+
+- (UIView *)dk_coverView
+{
+    if (!_dk_coverView) {
+        _dk_coverView = [[UIView alloc] init];
+        _dk_coverView.frame = CGRectMake(0.f, 0.f, SCREEN_WIDTH, SCREEN_HEIGHT);
+        _dk_coverView.backgroundColor = self.dk_coverViewBackgroundColor;
+        
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dk_dismissAlert)];
+        [_dk_coverView addGestureRecognizer:tapGesture];
+    }
+    return _dk_coverView;
 }
 @end

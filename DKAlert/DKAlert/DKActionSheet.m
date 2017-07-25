@@ -10,20 +10,23 @@
 
 @interface DKActionSheet ()
 {
-    
+    NSString *cancelButtonTitle;
+    UIColor *cancelButtonTitleColor;
 }
 @property (nonatomic, strong) UILabel *labelTitle;
 @end
 
 @implementation DKActionSheet
 
-- (instancetype)initWithTitle:(NSString *)title buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors
+- (instancetype)initWithTitle:(NSString *)title otherButtonTitles:(NSArray *)titles otherButtonTitleColors:(NSArray *)colors cancelButtonTitle:(NSString *)cancelTitle cancelButtonTitleColor:(UIColor *)cancelTitleColor
 {
     self = [super init];
     if (self) {
         alertTitle = title;
         arrayButtonTitles = titles;
         arrayButtonTitleColors = colors;
+        cancelButtonTitle = cancelTitle;
+        cancelButtonTitleColor = cancelTitleColor;
         
         [self sharedInit];
     }
@@ -88,25 +91,32 @@
             [self addLineUpToView:btnAction width:CGRectGetWidth(btnAction.frame) marginTop:0.f];
         }
     }
-    // 添加取消按钮
-    UIButton *previousButton = [self.arrayButtons lastObject];
-    UIButton *btnCancel = [self addButtonWithTag:numberOfButtons backgroundColor:nil title:@"取消" titleColor:[UIColor redColor]];
-    btnCancel.frame = CGRectMake(0.f, CGRectGetMaxY(previousButton.frame) + padding, CGRectGetWidth(previousButton.frame), DEFAULT_BUTTON_HEIGHT);
-    
-    height += (padding + DEFAULT_BUTTON_HEIGHT);
+    if (cancelButtonTitle && cancelButtonTitle.length > 0) {
+        // 添加取消按钮
+        UIButton *previousButton = [[self getButtonsOnView] lastObject];
+        UIButton *btnCancel = [self addButtonWithTag:numberOfButtons backgroundColor:nil title:cancelButtonTitle titleColor:cancelButtonTitleColor];
+        btnCancel.frame = CGRectMake(0.f, CGRectGetMaxY(previousButton.frame) + padding, CGRectGetWidth(previousButton.frame), DEFAULT_BUTTON_HEIGHT);
+        
+        height += (padding + DEFAULT_BUTTON_HEIGHT);
+    }
     
     return height;
 }
 
 #pragma mark 对外方法实现
-+ (void)dk_showActionSheetWithTitle:(NSString *)title buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors action:(DKAlert_ButtonActionBlock)block
++ (void)dk_showActionSheetWithTitle:(NSString *)title otherButtonTitles:(NSArray *)titles otherButtonTitleColors:(NSArray *)colors cancelButtonTitle:(NSString *)cancelButtonTitle cancelButtonTitleColor:(UIColor *)cancelButtonTitleColor action:(DKAlert_ButtonActionBlock)block
 {
-    DKActionSheet *actionSheet = [[DKActionSheet alloc] initWithTitle:title buttonTitles:titles buttonTitleColors:colors];
+    DKActionSheet *actionSheet = [[DKActionSheet alloc] initWithTitle:title otherButtonTitles:titles otherButtonTitleColors:colors cancelButtonTitle:cancelButtonTitle cancelButtonTitleColor:cancelButtonTitleColor];
     actionSheet.dk_showAnimationType = DKAlertShowAnimationTypeFromBottom;
     actionSheet.dk_dismissAnimationType = DKAlertDismissAnimationTypeToBottom;
     actionSheet.actionBlock = block;
     
     [actionSheet dk_showAlert];
+}
+
++ (void)dk_showActionSheetWithTitle:(NSString * __nullable)title otherButtonTitles:(NSArray * __nullable)titles otherButtonTitleColors:(NSArray * __nullable)colors action:(DKAlert_ButtonActionBlock __nullable)block
+{
+    [self dk_showActionSheetWithTitle:title otherButtonTitles:titles otherButtonTitleColors:colors cancelButtonTitle:@"取消" cancelButtonTitleColor:[UIColor redColor] action:block];
 }
 
 #pragma mark getter/setter
@@ -117,7 +127,7 @@
         _labelTitle.backgroundColor = [UIColor whiteColor];
         _labelTitle.textColor = [UIColor lightGrayColor];
         _labelTitle.textAlignment = NSTextAlignmentCenter;
-        _labelTitle.font = [UIFont systemFontOfSize:14.f];
+        _labelTitle.font = [UIFont systemFontOfSize:12.f];
         [self addSubview:_labelTitle];
     }
     return _labelTitle;

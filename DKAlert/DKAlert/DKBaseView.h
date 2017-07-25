@@ -40,6 +40,17 @@ typedef NS_ENUM(NSUInteger, DKAlertDismissAnimationType) {
     DKAlertDismissAnimationTypeToRight
 };
 
+typedef NS_ENUM(NSUInteger, DKAlertIconType) {
+    DKAlertIconTypeNone = 0,
+    DKAlertIconTypeSuccess,
+    DKAlertIconTypeFailure,
+    DKAlertIconTypeInfomation,
+    DKAlertIconTypeSuccessCircle,
+    DKAlertIconTypeFailureCircle,
+    DKAlertIconTypeInfomationCircle,
+    DKAlertIconTypeCustom
+};
+
 typedef void(^DKAlert_ButtonActionBlock)(NSInteger index);
 
 static NSTimeInterval DEFAULT_ANIMATION_DURATION = .4f;
@@ -54,8 +65,11 @@ static CGFloat DEFAULT_LINE_HEIGHT_OR_WIDTH = .5f;
     
     CGFloat padding;
 }
+@property (nonatomic, strong) UIWindow *userWindow;
 
-@property (nonatomic, strong, readonly) NSMutableArray *arrayButtons;
+@property (nonatomic, strong) UIView *dk_coverView;
+
+@property (nonatomic, getter=isNeedCoverView) BOOL needCoverView;
 
 @property (nonatomic) DKAlertShowAnimationType dk_showAnimationType;
 
@@ -74,4 +88,10 @@ static CGFloat DEFAULT_LINE_HEIGHT_OR_WIDTH = .5f;
 - (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width marginTop:(CGFloat)top;
 
 - (UIView *)addVerticalLineLeftToView:(UIView *)view height:(CGFloat)height marginLeft:(CGFloat)left;
+
+- (NSArray *)getButtonsOnView;
+
+- (NSArray *)getLinesOnView;
+
+- (NSString *)getIconFileNameByIconType:(DKAlertIconType)type;
 @end
