@@ -110,7 +110,7 @@
     [btnAction setTitle:title forState:UIControlStateNormal];
     [btnAction setTitleColor:titleColor forState:UIControlStateNormal];
     [btnAction setBackgroundImage:[UIImage createImageWithColor:rgb(245, 245, 245)] forState:UIControlStateHighlighted];
-//    [btnAction addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [btnAction addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
 //    [btnAction addTarget:self action:@selector(buttonTouched:) forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
 //    [btnAction addTarget:self action:@selector(buttonReleased:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchDragExit];
     [view addSubview:btnAction];

@@ -200,7 +200,7 @@
     return height;
 }
 
-#pragma 对外方法实现
+#pragma mark 对外方法实现
 + (void)dk_showAlertWithTitle:(NSString *)title message:(NSString *)message buttonTitles:(NSArray *)titles buttonTitleColors:(NSArray *)colors showAnimationType:(DKAlertShowAnimationType)showType dismissAnimationType:(DKAlertDismissAnimationType)dismissType action:(DKAlert_ButtonActionBlock)block
 {
     DKAlert *alertView = [[DKAlert alloc] initWithTitle:title message:message buttonTitle:titles buttonTitleColors:colors iconType:DKAlertIconTypeNone];
