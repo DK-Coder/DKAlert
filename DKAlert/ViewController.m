@@ -19,6 +19,8 @@ static NSString *kDefaultCellIdentifier = @"kDefaultCellIdentifier";
     NSDictionary *dictDatasources;
     
     NSArray *colors;
+    
+    UITableView *tableOptions;
 }
 @end
 
@@ -48,18 +50,25 @@ static NSString *kDefaultCellIdentifier = @"kDefaultCellIdentifier";
                                 @"没有title的NotificationAlert",
                                 @"没有message的NotificationAlert"]};
     
-    UITableView *tableOptions = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
+    tableOptions = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
     tableOptions.delegate = self;
     tableOptions.dataSource = self;
     tableOptions.rowHeight = 50.f;
     [tableOptions registerClass:[UITableViewCell class] forCellReuseIdentifier:kDefaultCellIdentifier];
     [self.view addSubview:tableOptions];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDeviceOrientationRotateAction:) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)handleDeviceOrientationRotateAction:(NSNotification *)notification
+{
+    tableOptions.frame = self.view.frame;
+    [tableOptions reloadData];
 }
 
 #pragma mark tableview 数据源

@@ -11,4 +11,6 @@
 @interface UIImage (DKExtension)
 
 - (UIImage *)changeImageColorTo:(UIColor *)color;
+
++ (UIImage *)createImageWithColor:(UIColor *)color;
 @end

@@ -49,7 +49,13 @@ static DKNotificationAlert *instance;
     self.alertTitleContentColor = [UIColor blackColor];
     self.alertMessageColor = [UIColor blackColor];
     self.alertIconType = DKAlertIconTypeNone;
-    self.dk_coverView.hidden = YES;
+    
+    weakifySelf();
+    self.animationEndBlock = ^{
+        strongifySelf();
+        strongSelf.userWindow.windowLevel = UIWindowLevelNormal;
+        [strongSelf destroyTimer];
+    };
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnView:)];
     [self addGestureRecognizer:tapGesture];
@@ -59,6 +65,7 @@ static DKNotificationAlert *instance;
 {
     [super dk_layoutAlert];
     
+    self.backgroundColor = [UIColor whiteColor];
     self.userWindow.windowLevel = UIWindowLevelAlert;
     
     CGFloat widthForActionSheet = SCREEN_WIDTH;
@@ -75,12 +82,6 @@ static DKNotificationAlert *instance;
     
     [self destroyTimer];
     [self addTimerToRunLoop];
-}
-
-- (void)dk_dismissAlert
-{
-    [self destroyTimer];
-    [super dk_dismissAlert];
 }
 
 - (CGPathRef)generatePathByDirection:(NSUInteger)direction
@@ -133,7 +134,7 @@ static DKNotificationAlert *instance;
 
 - (void)layoutTitleLabel
 {
-    if (_alertTitleContent) {
+    if (_alertTitleContent && _alertTitleContent.length > 0) {
         self.labelTitle.text = _alertTitleContent;
         
         CGFloat widthForLabel = CGRectGetWidth(self.frame) - CGRectGetMaxX(_imageIcon.frame) - padding * 2;
@@ -154,7 +155,7 @@ static DKNotificationAlert *instance;
 
 - (void)layoutMessageLabel
 {
-    if (_alertMessage) {
+    if (_alertMessage && _alertMessage.length > 0) {
         self.labelMessage.text = _alertMessage;
         
         CGFloat widthForLabel = CGRectGetWidth(self.frame) - CGRectGetMaxX(_imageIcon.frame) - padding * 2;
@@ -175,6 +176,7 @@ static DKNotificationAlert *instance;
 
 - (void)tapOnView:(UITapGestureRecognizer *)tap
 {
+    [self removeGestureRecognizer:tap];
     if (self.dk_delegate && [self.dk_delegate respondsToSelector:@selector(didClickOnNotificationAlert:)]) {
         [self.dk_delegate didClickOnNotificationAlert:self];
     }

@@ -63,16 +63,22 @@
 
 - (void)dk_dismissAlert
 {
-    __weak typeof(self) weakSelf = self;
+    weakifySelf();
     if (self.dk_dismissAnimationType != DKAlertDismissAnimationTypeFadeOut) {
         CGPathRef path = [self generatePathByDirection:self.dk_dismissAnimationType];
         [self.layer addKeyframeAnimationWithDuration:DEFAULT_ANIMATION_DURATION path:path animationKey:@"dismissAnimation" complete:^{
-            __strong typeof(weakSelf) strongSelf = weakSelf;
+            strongifySelf();
+            if (strongSelf.animationEndBlock) {
+                strongSelf.animationEndBlock();
+            }
             [strongSelf destroy];
         }];
     } else {
         [self.layer addAlphaAnimationWithDuration:DEFAULT_ANIMATION_DURATION from:1.f to:0.f animationKey:@"dismissAnimation" complete:^{
-            __strong typeof(weakSelf) strongSelf = weakSelf;
+            strongifySelf();
+            if (strongSelf.animationEndBlock) {
+                strongSelf.animationEndBlock();
+            }
             [strongSelf destroy];
         }];
     }
@@ -80,7 +86,7 @@
 
 - (void)dk_layoutAlert
 {
-    self.dk_coverView.frame = self.window.bounds;
+    _dk_coverView.frame = self.window.bounds;
     
     [self clearAllButtonsAndLines];
 }
@@ -96,25 +102,26 @@
     return [_arrayLines copy];
 }
 
-- (UIButton *)addButtonWithTag:(NSInteger)tag backgroundColor:(UIColor *)bgColor title:(NSString *)title titleColor:(UIColor *)titleColor
+- (UIButton *)addButtonOnView:(UIView *)view tag:(NSInteger)tag backgroundColor:(UIColor *)bgColor title:(NSString *)title titleColor:(UIColor *)titleColor
 {
     UIButton *btnAction = [[UIButton alloc] init];
     btnAction.tag = tag;
     btnAction.backgroundColor = bgColor ?: [UIColor whiteColor];
     [btnAction setTitle:title forState:UIControlStateNormal];
     [btnAction setTitleColor:titleColor forState:UIControlStateNormal];
-    [btnAction addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [btnAction addTarget:self action:@selector(buttonTouched:) forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
-    [btnAction addTarget:self action:@selector(buttonReleased:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchDragExit];
-    [self addSubview:btnAction];
+    [btnAction setBackgroundImage:[UIImage createImageWithColor:rgb(245, 245, 245)] forState:UIControlStateHighlighted];
+//    [btnAction addTarget:self action:@selector(actionButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+//    [btnAction addTarget:self action:@selector(buttonTouched:) forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
+//    [btnAction addTarget:self action:@selector(buttonReleased:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchDragExit];
+    [view addSubview:btnAction];
     [self.arrayButtons addObject:btnAction];
     
     return btnAction;
 }
 
-- (UIButton *)addButtonAtIndex:(NSInteger)index
+- (UIButton *)addButtonOnView:(UIView *)view atIndex:(NSInteger)index
 {
-    return [self addButtonWithTag:index backgroundColor:[UIColor whiteColor] title:arrayButtonTitles[index] titleColor:[self buttonTitleColorAtIndex:index]];
+    return [self addButtonOnView:view tag:index backgroundColor:[UIColor whiteColor] title:arrayButtonTitles[index] titleColor:[self buttonTitleColorAtIndex:index]];
 }
 
 - (UIColor *)buttonTitleColorAtIndex:(NSInteger)index
@@ -129,23 +136,23 @@
     return titleColor;
 }
 
-- (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width marginTop:(CGFloat)top
+- (UIView *)addLineOnView:(UIView *)view topToView:(UIView *)topView width:(CGFloat)width marginTop:(CGFloat)top
 {
     UIView *line = [[UIView alloc] init];
-    line.frame = CGRectMake((CGRectGetWidth(self.frame) - width) / 2, CGRectGetMaxY(view.frame) + top, width, DEFAULT_LINE_HEIGHT_OR_WIDTH);
+    line.frame = CGRectMake((CGRectGetWidth(self.frame) - width) / 2, CGRectGetMaxY(topView.frame) + top, width, DEFAULT_LINE_HEIGHT_OR_WIDTH);
     line.backgroundColor = rgb(186, 186, 186);
-    [self addSubview:line];
+    [view addSubview:line];
     [_arrayLines addObject:line];
     
     return line;
 }
 
-- (UIView *)addVerticalLineLeftToView:(UIView *)view height:(CGFloat)height marginLeft:(CGFloat)left
+- (UIView *)addVerticalLineOnView:(UIView *)view leftToView:(UIView *)leftView height:(CGFloat)height marginLeft:(CGFloat)left
 {
     UIView *line = [[UIView alloc] init];
-    line.frame = CGRectMake(CGRectGetMaxX(view.frame) + left, CGRectGetMinY(view.frame), DEFAULT_LINE_HEIGHT_OR_WIDTH, height);
+    line.frame = CGRectMake(CGRectGetMaxX(leftView.frame) + left, CGRectGetMinY(leftView.frame), DEFAULT_LINE_HEIGHT_OR_WIDTH, height);
     line.backgroundColor = rgb(186, 186, 186);
-    [self addSubview:line];
+    [view addSubview:line];
     [_arrayLines addObject:line];
     
     return line;
@@ -186,12 +193,11 @@
 
 - (void)buttonReleased:(UIButton *)sender
 {
-    sender.backgroundColor = [UIColor clearColor];
+    sender.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)destroy
 {
-    self.userWindow.windowLevel = UIWindowLevelNormal;
     if (self.dk_showAnimationType != DKAlertShowAnimationTypeFadeIn) {
         [self.layer removeAllAnimations];
     }

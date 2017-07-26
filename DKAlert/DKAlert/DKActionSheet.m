@@ -51,7 +51,7 @@
         // 标题
         self.labelTitle.text = alertTitle;
         self.labelTitle.frame = CGRectMake(0.f, 0.f, widthForActionSheet, 60.f);
-        labelBottomLine = [self addLineUpToView:self.labelTitle width:widthForActionSheet marginTop:0.f];
+        labelBottomLine = [self addLineOnView:self topToView:self.labelTitle width:widthForActionSheet marginTop:0.f];
     } else {
 //        padding = 0.f;
     }
@@ -82,20 +82,32 @@
 #pragma mark 内部方法实现
 - (CGFloat)layoutButtonsReferenceView:(UIView *)view
 {
+    CGFloat maxHeightForButtons = SCREEN_HEIGHT - CGRectGetMaxY(view.frame) - (padding + DEFAULT_BUTTON_HEIGHT);
     NSInteger numberOfButtons = arrayButtonTitles.count;
     CGFloat height = DEFAULT_BUTTON_HEIGHT * numberOfButtons + (numberOfButtons - 1) * DEFAULT_LINE_HEIGHT_OR_WIDTH;
+    UIScrollView *scrollContainer = nil;
+    
+    if (height > maxHeightForButtons) {
+        scrollContainer = [[UIScrollView alloc] initWithFrame:CGRectMake(0.f, CGRectGetMaxY(view.frame), SCREEN_WIDTH, maxHeightForButtons)];
+        scrollContainer.showsVerticalScrollIndicator = NO;
+        scrollContainer.showsHorizontalScrollIndicator = NO;
+        scrollContainer.contentSize = CGSizeMake(0.f, height);
+        [self addSubview:scrollContainer];
+        
+        height = maxHeightForButtons;
+    }
     for (NSInteger i = 0; i < numberOfButtons; i++) {
-        UIButton *btnAction = [self addButtonAtIndex:i];
+        UIButton *btnAction = [self addButtonOnView:(scrollContainer ?: self) atIndex:i];
         btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame) + (DEFAULT_BUTTON_HEIGHT + DEFAULT_LINE_HEIGHT_OR_WIDTH) * i, SCREEN_WIDTH, DEFAULT_BUTTON_HEIGHT);
         if (i != numberOfButtons - 1) {
-            [self addLineUpToView:btnAction width:CGRectGetWidth(btnAction.frame) marginTop:0.f];
+            [self addLineOnView:(scrollContainer ?: self) topToView:btnAction width:CGRectGetWidth(btnAction.frame) marginTop:0.f];
         }
     }
     if (cancelButtonTitle && cancelButtonTitle.length > 0) {
         // 添加取消按钮
-        UIButton *previousButton = [[self getButtonsOnView] lastObject];
-        UIButton *btnCancel = [self addButtonWithTag:numberOfButtons backgroundColor:nil title:cancelButtonTitle titleColor:cancelButtonTitleColor];
-        btnCancel.frame = CGRectMake(0.f, CGRectGetMaxY(previousButton.frame) + padding, CGRectGetWidth(previousButton.frame), DEFAULT_BUTTON_HEIGHT);
+        UIView *previousView = scrollContainer ?: [[self getButtonsOnView] lastObject];
+        UIButton *btnCancel = [self addButtonOnView:self tag:numberOfButtons backgroundColor:nil title:cancelButtonTitle titleColor:cancelButtonTitleColor];
+        btnCancel.frame = CGRectMake(0.f, CGRectGetMaxY(previousView.frame) + padding, CGRectGetWidth(previousView.frame), DEFAULT_BUTTON_HEIGHT);
         
         height += (padding + DEFAULT_BUTTON_HEIGHT);
     }

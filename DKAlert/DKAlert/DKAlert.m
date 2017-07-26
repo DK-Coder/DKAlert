@@ -75,7 +75,7 @@
     CGSize sizeForTitle = [self.labelTitle sizeThatFits:CGSizeMake(widthForAlert - padding * 2, CGFLOAT_MAX)];
     self.labelTitle.frame = CGRectMake(padding, padding, widthForAlert - padding * 2, sizeForTitle.height);
     // 我是一条分割线
-    UIView *line1 = [self addLineUpToView:self.labelTitle width:CGRectGetWidth(self.labelTitle.frame) marginTop:padding];
+    UIView *line1 = [self addLineOnView:self topToView:self.labelTitle width:CGRectGetWidth(self.labelTitle.frame) marginTop:padding];
     if (!alertTitle || alertTitle.length == 0) {
         CGRect frameForLine1 = line1.frame;
         frameForLine1.size.height = 0.f;
@@ -87,7 +87,7 @@
     CGFloat heightForMessage = sizeForMessage.height > maxHeightForMessage ? maxHeightForMessage : sizeForMessage.height;
     self.textViewContent.frame = CGRectMake(padding, CGRectGetMaxY(line1.frame) + padding, widthForAlert - padding * 2, heightForMessage);
     // 我是一条分割线
-    UIView *line2 = [self addLineUpToView:self.textViewContent width:widthForAlert marginTop:padding];
+    UIView *line2 = [self addLineOnView:self topToView:self.textViewContent width:widthForAlert marginTop:padding];
     // 布局按钮
     CGFloat heightForButtons = [self layoutButtonsReferenceView:line2];
     
@@ -114,11 +114,11 @@
         CGFloat heightForMessage = sizeForMessage.height > maxHeightForMessage ? maxHeightForMessage : sizeForMessage.height;
         self.textViewContent.frame = CGRectMake(padding, CGRectGetMaxY(self.imageIcon.frame) + padding * 3, widthForAlert - padding * 2, heightForMessage);
         // 我是一条分割线
-        line = [self addLineUpToView:self.textViewContent width:widthForAlert marginTop:padding];
+        line = [self addLineOnView:self topToView:self.textViewContent width:widthForAlert marginTop:padding];
     } else {
         self.textViewContent.frame = CGRectZero;
         // 我是一条分割线
-        line = [self addLineUpToView:self.imageIcon width:widthForAlert marginTop:CGRectGetMinY(self.imageIcon.frame)];
+        line = [self addLineOnView:self topToView:self.imageIcon width:widthForAlert marginTop:CGRectGetMinY(self.imageIcon.frame)];
     }
     // 布局按钮
     CGFloat heightForButtons = [self layoutButtonsReferenceView:line];
@@ -172,7 +172,7 @@
     if (arrayButtonTitles.count == 1) {
         height = DEFAULT_BUTTON_HEIGHT;
         
-        UIButton *btnAction = [self addButtonAtIndex:0];
+        UIButton *btnAction = [self addButtonOnView:self atIndex:0];
         btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame), CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
 //        btnAction.layer.cornerRadius = self.layer.cornerRadius;
     } else if (arrayButtonTitles.count == 2) {
@@ -180,22 +180,19 @@
         
         CGFloat widthForButton = CGRectGetWidth(self.frame) / 2;
         for (NSInteger i = 0; i < 2; i++) {
-            UIButton *btnAction = [self addButtonAtIndex:i];
+            UIButton *btnAction = [self addButtonOnView:self atIndex:i];
             btnAction.frame = CGRectMake((widthForButton + .5f) * i, CGRectGetMaxY(view.frame), widthForButton, DEFAULT_BUTTON_HEIGHT);
-//            btnAction.layer.cornerRadius = self.layer.cornerRadius;
             if (i == 0) {
-                [self addVerticalLineLeftToView:btnAction height:DEFAULT_BUTTON_HEIGHT marginLeft:0.f];
+                [self addVerticalLineOnView:self leftToView:btnAction height:DEFAULT_BUTTON_HEIGHT marginLeft:0.f];
             }
         }
     } else {
         height = arrayButtonTitles.count * DEFAULT_BUTTON_HEIGHT + (arrayButtonTitles.count - 1) * DEFAULT_LINE_HEIGHT_OR_WIDTH;
         for (NSInteger i = 0, length = arrayButtonTitles.count; i < length; i++) {
-            UIButton *btnAction = [self addButtonAtIndex:i];
+            UIButton *btnAction = [self addButtonOnView:self atIndex:i];
             btnAction.frame = CGRectMake(0.f, CGRectGetMaxY(view.frame) + i * (DEFAULT_BUTTON_HEIGHT + DEFAULT_LINE_HEIGHT_OR_WIDTH), CGRectGetWidth(self.frame), DEFAULT_BUTTON_HEIGHT);
-            if (i == length - 1) {
-//                btnAction.layer.cornerRadius = self.layer.cornerRadius;
-            } else {
-                [self addLineUpToView:btnAction width:CGRectGetWidth(self.frame) marginTop:0.f];
+            if (i != length - 1) {
+                [self addLineOnView:self topToView:btnAction width:CGRectGetWidth(self.frame) marginTop:0.f];
             }
         }
     }

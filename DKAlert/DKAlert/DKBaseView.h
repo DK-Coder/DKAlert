@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UIImage+DKExtension.h"
 
 @protocol DKBaseViewDelegate <NSObject>
 
@@ -23,6 +24,8 @@
 #define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 #define rgba(r, g, b, a) [UIColor colorWithRed:r/255.f green:g/255.f blue:b/255.f alpha:a]
 #define rgb(r, g, b) rgba(r, g, b, 1)
+#define weakifySelf() __weak typeof(self) weakSelf = self
+#define strongifySelf() __strong typeof(weakSelf) strongSelf = weakSelf
 
 typedef NS_ENUM(NSUInteger, DKAlertShowAnimationType) {
     DKAlertShowAnimationTypeFadeIn = 0,
@@ -52,6 +55,7 @@ typedef NS_ENUM(NSUInteger, DKAlertIconType) {
 };
 
 typedef void(^DKAlert_ButtonActionBlock)(NSInteger index);
+typedef void(^DKAlert_AnimationEndBlock)();
 
 static NSTimeInterval DEFAULT_ANIMATION_DURATION = .4f;
 static CGFloat DEFAULT_BUTTON_HEIGHT = 50.f;
@@ -77,17 +81,19 @@ static CGFloat DEFAULT_LINE_HEIGHT_OR_WIDTH = .5f;
 
 @property (nonatomic, copy) DKAlert_ButtonActionBlock actionBlock;
 
+@property (nonatomic, copy) DKAlert_AnimationEndBlock animationEndBlock;
+
 - (void)dk_showAlert;
 
 - (void)dk_dismissAlert;
 
-- (UIButton *)addButtonWithTag:(NSInteger)tag backgroundColor:(UIColor *)bgColor title:(NSString *)title titleColor:(UIColor *)titleColor;
+- (UIButton *)addButtonOnView:(UIView *)view tag:(NSInteger)tag backgroundColor:(UIColor *)bgColor title:(NSString *)title titleColor:(UIColor *)titleColor;
 
-- (UIButton *)addButtonAtIndex:(NSInteger)index;
+- (UIButton *)addButtonOnView:(UIView *)view atIndex:(NSInteger)index;
 
-- (UIView *)addLineUpToView:(UIView *)view width:(CGFloat)width marginTop:(CGFloat)top;
+- (UIView *)addLineOnView:(UIView *)view topToView:(UIView *)topView width:(CGFloat)width marginTop:(CGFloat)top;
 
-- (UIView *)addVerticalLineLeftToView:(UIView *)view height:(CGFloat)height marginLeft:(CGFloat)left;
+- (UIView *)addVerticalLineOnView:(UIView *)view leftToView:(UIView *)leftView height:(CGFloat)height marginLeft:(CGFloat)left;
 
 - (NSArray *)getButtonsOnView;
 
