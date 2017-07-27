@@ -13,7 +13,7 @@
 
 @optional
 - (void)sharedInit;
-- (CGPathRef)generatePathByDirection:(NSUInteger)direction;
+- (CGPathRef _Nonnull)generatePathByDirection:(NSUInteger)direction;
 
 @required
 - (void)dk_layoutAlert;
@@ -69,9 +69,9 @@ static CGFloat DEFAULT_LINE_HEIGHT_OR_WIDTH = .5f;
     
     CGFloat padding;
 }
-@property (nonatomic, strong) UIWindow *userWindow;
+@property (nullable, nonatomic, strong) UIWindow *userWindow;
 
-@property (nonatomic, strong) UIView *dk_coverView;
+@property (nullable, nonatomic, strong) UIView *dk_coverView;
 
 @property (nonatomic, getter=isNeedCoverView) BOOL needCoverView;
 
@@ -79,25 +79,25 @@ static CGFloat DEFAULT_LINE_HEIGHT_OR_WIDTH = .5f;
 
 @property (nonatomic) DKAlertDismissAnimationType dk_dismissAnimationType;
 
-@property (nonatomic, copy) DKAlert_ButtonActionBlock actionBlock;
+@property (nullable, nonatomic, copy) DKAlert_ButtonActionBlock actionBlock;
 
-@property (nonatomic, copy) DKAlert_AnimationEndBlock animationEndBlock;
+@property (nullable, nonatomic, copy) DKAlert_AnimationEndBlock animationEndBlock;
 
 - (void)dk_showAlert;
 
 - (void)dk_dismissAlert;
 
-- (UIButton *)addButtonOnView:(UIView *)view tag:(NSInteger)tag backgroundColor:(UIColor *)bgColor title:(NSString *)title titleColor:(UIColor *)titleColor;
+- (UIButton * _Nonnull)addButtonOnView:(UIView * _Nonnull)view tag:(NSInteger)tag backgroundColor:(UIColor * __nullable)bgColor title:(NSString * _Nonnull)title titleColor:(UIColor * _Nonnull)titleColor;
 
-- (UIButton *)addButtonOnView:(UIView *)view atIndex:(NSInteger)index;
+- (UIButton * _Nonnull)addButtonOnView:(UIView * _Nonnull)view atIndex:(NSInteger)index;
 
-- (UIView *)addLineOnView:(UIView *)view topToView:(UIView *)topView width:(CGFloat)width marginTop:(CGFloat)top;
+- (UIView * _Nonnull)addLineOnView:(UIView * _Nonnull)view topToView:(UIView * __nullable)topView width:(CGFloat)width marginTop:(CGFloat)top;
 
-- (UIView *)addVerticalLineOnView:(UIView *)view leftToView:(UIView *)leftView height:(CGFloat)height marginLeft:(CGFloat)left;
+- (UIView * _Nonnull)addVerticalLineOnView:(UIView * _Nonnull)view leftToView:(UIView * __nullable)leftView height:(CGFloat)height marginLeft:(CGFloat)left;
 
-- (NSArray *)getButtonsOnView;
+- (NSArray * __nullable)getButtonsOnView;
 
-- (NSArray *)getLinesOnView;
+- (NSArray * __nullable)getLinesOnView;
 
-- (NSString *)getIconFileNameByIconType:(DKAlertIconType)type;
+- (NSString * __nullable)getIconFileNameByIconType:(DKAlertIconType)type;
 @end
